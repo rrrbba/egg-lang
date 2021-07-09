@@ -32,6 +32,8 @@ const skipSpace = (string) => {
 
 const parseApply = (expr, program) => {
     program = skipSpace(program);
+
+    //if next character in program not an (, it's not an application
     if (program[0] != "(") {
         return {expr: expr, rest: program};
     }
