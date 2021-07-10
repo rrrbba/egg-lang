@@ -1,0 +1,1 @@
+const specialForms = Object.create(null);
