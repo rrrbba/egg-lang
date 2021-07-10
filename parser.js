@@ -37,7 +37,7 @@ const parseApply = (expr, program) => {
     if (program[0] != "(") {
         return {expr: expr, rest: program};
     }
-
+    //Creating syntax tree 
     program = skipSpace(program.slice(1));
     expr = {type: "apply", operator: expr, args: []};
 
@@ -58,3 +58,15 @@ const parseApply = (expr, program) => {
     return parseApply(expr, program.slice(1));
 
 }
+
+//Function to verify it has reached the end of the input string after parsing the expression
+const parse = (program) => {
+    let {expr, rest} = parseExpression(program);
+
+    if (skipSpace(rest).length > 0) {
+        throw new SyntaxError("Unexpected text after program");
+    }
+    return expr;
+}
+
+console.log(parse("+(a,10)"));
