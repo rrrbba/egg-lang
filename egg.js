@@ -1,4 +1,4 @@
-
+//EGG PARSER
 
 const parseExpression = (program) => {
 
@@ -69,4 +69,59 @@ const parse = (program) => {
     return expr;
 }
 
-console.log(parse("+(a,10)"));
+// console.log(parse("+(a,10)"));
+
+
+
+//SPECIAL FORMS
+//Used to define special syntax. It associates words with functions that evaluate such forms
+const specialForms = Object.create(null);
+specialForms.if = (args, scope) => {
+    if (args.length != 3) {
+        throw new SyntaxError("Wrong number of args to if");
+    
+    //Will evaluate the first and if the value isn't false, it will evaluate the second. Otherwise, the third gets evaluated
+    //Differs from JS as it will only treat things like zero or the empty string as false, only the precise value false
+    } else if (evaluate(args[0], scope) !== false) {
+        return evaluate(args[1], scope);
+    } else {
+        return evaluate(args[2], scope);
+    }
+}
+
+
+//EVALUATOR
+const evaluate = (expr, scope) => {
+
+    if (expr.type == "value") {
+        return expr.value;
+
+    } else if (expr.type == "word") {
+
+        if(expr.name in scope){
+            return scope[expr.name];
+
+        } else {
+            throw new ReferenceError(`Undefined binding: ${expr.name}`);
+        }
+    } else if (expr.type == "apply") {
+        
+        let {operator, args} = expr;
+
+        if (operator.type == "word" && operator.name in specialForms) {
+
+            return specialForms[operator.name](expr.args, scope);
+
+        } else {
+
+            let op = evaluate(operator, scope);
+
+            if (typeof op == "function") {
+                return op(...args.map(arg => evaluate(arg, scope)));
+            } else {
+                throw new TypeError("Applying a non-function.");
+            }
+        }
+    }
+
+}
